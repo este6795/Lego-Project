@@ -27,17 +27,17 @@ The project is still in an early stage.
 - Add support for generating build instructions from text
 - Add image input support if time allows
 
-Repository Structure
+## Repository Structure
 - source code — contains the current LEGO cube-generation algorithm
 - Frontend — basic stand-in user interface
 - Backend — basic stand-in server logic
 
-Roadmap
+## Roadmap
 - Expand model generation beyond cubes
 - Connect the frontend and backend more fully
 - Generate instructions from text
 - Add support for image-based input
 - Improve the final website experience
 
-Notes
+## Notes
 This repository currently serves as a prototype for a larger LEGO generation platform.
