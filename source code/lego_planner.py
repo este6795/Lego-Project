@@ -122,7 +122,7 @@ def export_ldraw(model, filename, color=4):
     )
 
 def main():
-    width = height = depth = 4
+    width = height = depth = 6
 
     print(f"Building a {width} x {height} x {depth} LEGO cube...")
 
@@ -133,7 +133,7 @@ def main():
     model.print_layers()
 
     # Save the LDraw file next to this Python script.
-    output = Path(__file__).parent / "lego_cube_4x4x4.ldr"
+    output = Path(__file__).parent / "lego_cube_6x6x6.ldr"
 
     export_ldraw(model, output)
 
