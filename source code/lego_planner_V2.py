@@ -26,8 +26,8 @@ BRICK_1X1 = Brick(
 
 BRICK_1X2 = Brick(
     "1x2 brick",
-    1,
     2,
+    1,
     1,
     "3004.dat"
 )
@@ -42,8 +42,8 @@ BRICK_2X2 = Brick(
 
 BRICK_2X4 = Brick(
     "2x4 brick",
-    2,
     4,
+    2,
     1,
     "3001.dat"
 )
@@ -53,7 +53,7 @@ BRICK_2X4 = Brick(
 BRICKS = [
     # BRICK_2X4,
    # BRICK_2X2,
-    BRICK_1X2,
+  #  BRICK_1X2,
     BRICK_1X1,
 ]
 
@@ -363,6 +363,24 @@ def fill_space(model):
 # 5. EXPORT TO LDRAW
 # ============================================================
 
+def grid_to_ldraw_position(placement):
+
+    brick = placement.brick
+
+    x = (
+        placement.x +
+        brick.width / 2
+    ) * 20
+
+    y = -placement.y * 24
+
+    z = (
+        placement.z +
+        brick.depth / 2
+    ) * 20
+
+    return x, y, z
+
 def export_ldraw(
     model,
     filename,
@@ -386,9 +404,7 @@ def export_ldraw(
 
         # Convert our grid coordinates
         # into LDraw units.
-        x = placement.x * 20
-        y = placement.y * 24
-        z = placement.z * 20
+        x, y, z = grid_to_ldraw_position(placement)
 
         lines.append(
             f"1 {color} "
@@ -455,7 +471,7 @@ def main():
     # Save the LDraw file beside this Python file.
     output = (
         Path(__file__).parent /
-        "lego_auto_build_3.ldr"
+        "lego_auto_build_1X1.ldr"
     )
 
     export_ldraw(
