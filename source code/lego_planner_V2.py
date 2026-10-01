@@ -51,9 +51,9 @@ BRICK_2X4 = Brick(
 
 # Try larger bricks first.
 BRICKS = [
-    # BRICK_2X4,
-   # BRICK_2X2,
-  #  BRICK_1X2,
+     BRICK_2X4,
+  #  BRICK_2X2,
+    BRICK_1X2,
     BRICK_1X1,
 ]
 
@@ -471,7 +471,7 @@ def main():
     # Save the LDraw file beside this Python file.
     output = (
         Path(__file__).parent /
-        "lego_auto_build_1X1.ldr"
+        "lego_auto_build_2x4.ldr"
     )
 
     export_ldraw(

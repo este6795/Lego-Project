@@ -8,8 +8,9 @@ app.use(express.json());
 // Test API endpoint
 app.get("/api/test", (req, res) => {
 const htmlContent = ` <div style="color: blue; font-family: Arial;">
-<h1>Welcome to the Store Dashboard!</h1>
+<h1>Welcome to The LEGO Planner!</h1>
 <p>This HTML is served from the backend.</p>
+<p> No seriously there is nothing here yet.</p>
 </div>`;
 res.send(htmlContent);
 });
