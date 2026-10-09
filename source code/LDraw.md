@@ -41,7 +41,7 @@ When it comes to Type 0, it is usually used for comments and metadata. Comments 
 | 0 !LDraw_ORG ..| Identifies a file/library type    | Useful for formal files, or accessing specific libraries|
 | 0 // ....      | Comment                           | Useful for generate/debug output                        |
 
-### Type 1
+### Type 1 Lego Piece Geometry
 
 Type 1 is used to define parts or pieces stored in the LDraw library and helps place the part. A type 1 line will typically look like this:
 
@@ -49,5 +49,83 @@ Type 1 is used to define parts or pieces stored in the LDraw library and helps p
   1 <color> <x_coordinate> <y_coordinate> <z_coordinate> a b c d e f g h i <file>
 ```
 
-Notice that in the line we have several parts. Each part of the line helps define something about the lego piece that is being placed. The `<color>` part is helping define the color of the lego piece. The `x`,`y`, and `z` help define where the lego piece is at. And the a-i part of the line is used to define its rotation angle which will be explained a bit later.
+Notice that in the line we have several parts. Each part of the line helps define something about the lego piece that is being placed. The `<color>` part is helping define the color of the lego piece. The `x`,`y`, and `z` help define where the lego piece is at. And the a-i, is a matrix that is used to define its orientation and scaling angle which will be explained a bit later. For quick reference a table is placed below.
 
+|        Field      | Meaning                                  |
+| ----------------- | ---------------------------------------- |
+|          1        | Line type                                |
+|        color      | Defines the color of the piece           |
+|      x y z        | Defines position of the lego piece       |
+| a b c d e f g h i | 3x3 matrix defining orentation and scale |
+|      file         | Defines which piece is being placed      |
+
+Consider the following line:
+
+```Python
+   1 4 0 0 0 1 0 0 0 1 0 0 0 1 3003.dat
+```
+
+![A red2x2 Lego Brick placed on a grid](https://grabcad.com/screenshots/pics/268b5d3a88a816f337b0f330247cc8b4/large.png)
+
+This line defines a red 2x2 lego piece placed at the origin plane (0,0,0). Now it has to be mentioned that LDraw uses a fairly unique coordinate plane but this will be discussed in a later section.
+
+## Understanding the Matrix
+
+The nine value matrix is not nine independent points of reference that is used to orient the lego piece. Instead it is a matrix that in itself allows for much more precise and detailed rotation of a lego piece. Moreover it is used in parallel with the x y z coordinates to help define the placement of a lego piece. The following calculation is the offical way that lego piece are defined and placed on the grid.
+
+``` Python
+    u' = a*u + b*v + c*w + x
+    v' = d*u + e*v + f*w + y
+    w' = g*u + h*v + i*w + z
+```
+
+In the context of this project, it is vital to understand how the matrix works in order to be able to rotate lego pieces when part of a bigger set of legos.
+
+### The Coordinate Plane
+
+As stated before the coordinate plane of LDraw is slightly different from what one would intuitively think it is. Unlike most coordinate planes, the LDraw one defines the x axis as positive, the z axis as positive, but the y axis as a negative value.
+
+![LDraw coordinate plane specifications](https://www.ldraw.org/uploads/images/Articles/LDrawCoordsSystem.png)
+
+Moreover, lego pieces do not have a 1:1 ratio in the coordinate plane. Instead they are given units of measurement in this case LDraw Units (LDU). The table below provides are quick reference to how LDraw defines lego brick sizes.
+
+|          Measurement               |      LDraw Value        |
+| ---------------------------------- | ----------------------- |
+|        1 Brick width/depth         |        20 LDU           |
+|1 Brick Height                      |        24 LDU           |
+|1 Plate Height                      |        8 LDU            |
+|1 Stud Diameter                     |        12 LDU           |
+|1 Stud Height                       |        4 LDU            |
+|Approximate Real life size of 1 LDU | 0.4mm or 1/64 of an inch|
+
+![LDraw Brick size specifications](https://www.ldraw.org/uploads/images/Articles/dim.png)
+
+As for the lego placement algorithm, it needs to be able to translate placed bricks accurately from its internal grid to the LDraw grid correctly, otherwise unwanted overlaps or the output may be correct internally but may be show incorrectly later on.
+
+### Colors
+
+Ldraw supports many colors which obviously define the color of the brick, but it can also define what material the lego piece of made of. As of now the main focus will be on a basic colors as well as some important "colors" that have different functions.
+
+| LDraw color number |     Common Name       |
+| ------------------ | --------------------- |
+|        1           |        Blue           |
+|        2           |        Green          |
+|        3           |        Teal           |
+|        4           |        Red            |
+|        5           |        Magenta        |
+|        6           |        Brown          |
+|        7           |        Light Gray     |
+|        8           |        Dark Gray      |
+|        9           |        Light Blue     |
+|        10          |        Bright Green   |
+|        11          |        Yellow         |
+|        12          |        White          |
+|        13          |        Light Green    |
+|        14          |        Sand Blue      |
+|        15          |        Black          |
+|        16          |        Main Color     |
+|        24          |        Edge Color     |
+
+![Ldraw Colors](https://www.ldraw.org/uploads/images/Articles/VisualLDconfig.png)
+
+Colors 16 and 24 are unique as they do not have a traditional color associated with them. Instead color 16, follows the main color of other bricks around it. While color 24 is primarily used by line types 2 and 5 for edge rendering. In our earlier example, the brick was given the color code 4, which means it is a red brick.
