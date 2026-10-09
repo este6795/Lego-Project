@@ -30,7 +30,7 @@ The most important types for this project are 0 and 1. As these will allow use t
 
 ### Type 0 Comments/Meta Commands
 
-When it comes to Type 0, it is usually used for comments and metadata. Comments are well, just comments they do not create any visual geometry but do help define things such as file name, libraries, marking the end of steps (which will be useful later when we get the lego instruction building), and various other things. 
+When it comes to Type 0, it is usually used for comments and metadata. Comments are well, just comments they do not create any visual geometry but do help define things such as file name, libraries, marking the end of steps (which will be useful later when we get the lego instruction building), and various other things.
 
 |     Command    |                Purpose            |                       Usage                             |
 | -------------- | --------------------------------- |---------------------------------------------------------|
@@ -129,3 +129,26 @@ Ldraw supports many colors which obviously define the color of the brick, but it
 ![Ldraw Colors](https://www.ldraw.org/uploads/images/Articles/VisualLDconfig.png)
 
 Colors 16 and 24 are unique as they do not have a traditional color associated with them. Instead color 16, follows the main color of other bricks around it. While color 24 is primarily used by line types 2 and 5 for edge rendering. In our earlier example, the brick was given the color code 4, which means it is a red brick.
+
+### Type 2-5 Geometry
+
+Type 2-5 lines are not generally important for this project however it is important to at least know what theses do. A quick reference table is inserted below to help explain their functions. But as stated before this are considered "out of scope" as we should only be working with predefined lego parts rather than try and create our own.
+
+| Type    |             Syntax                         |        Purpose            |
+| ------- | ------------------------------------------ | ------------------------- |
+| 2       | 2 color x1 y1 z1 x2 y2 z2                  | Line between two points.  |
+| 3       | 3 color x1 y1 z1 x2 y2 z2 x3 y3 z3         | Filled triangle.          |
+| 4       | 4 color x1 y1 z1 x2 y2 z2 x3 y3 z3 x4 y4 z4| Filled quadrilateral.     |
+| 5       | 5 color x1 y1 z1 x2 y2 z2 x3 y3 z3 x4 y4 z4| Optional/conditional line.|
+
+## LDraw Limitations
+
+As with any software, there has to be some kind of limitation as for LDraw, several exist.
+
+- Overlapping is not checked
+
+- Studs are not checked for actual connection
+
+- Lego builds are not checked for physical buildability
+
+Now fortunately the lego building algorithm should be able to check for such things, however if any mistakes are made or if the lego builder does not check for these items properly, the final product may not be what was actually expected. However, LDraw is a powerful tool and it is worth learning the documentation of the software.
