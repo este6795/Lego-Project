@@ -65,7 +65,7 @@ Consider the following line:
    1 4 0 0 0 1 0 0 0 1 0 0 0 1 3003.dat
 ```
 
-![A red2x2 Lego Brick placed on a grid](https://ibb.co/Gvy2d6Tj)
+![A red2x2 Lego Brick placed on a grid](https://i.postimg.cc/L8VwWR8G/Screenshot-2026-10-09-114312.png)
 
 This line defines a red 2x2 lego piece placed at the origin plane (0,0,0). Now it has to be mentioned that LDraw uses a fairly unique coordinate plane but this will be discussed in a later section.
 
