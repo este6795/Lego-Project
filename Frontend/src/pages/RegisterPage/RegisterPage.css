@@ -1,0 +1,70 @@
+.login-page {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 48px;
+}
+
+.title {
+  font-size: 50px;
+  font-weight: bold;
+  margin: 0 0 50px;
+}
+
+.login-card {
+  background-color: #dad7d7;
+  width: 320px;
+  max-width: 100%;
+  padding: 24px;
+  border-radius: 18px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-card button {
+  background-color: #111010;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #cbc9c9;
+}
+
+.login-card button:hover {
+  background-color: #2d2d2d;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 2px solid #a8a4a4;
+  font-size: 16px;
+}
+
+.login-card input::placeholder {
+  color: rgb(182, 177, 177);
+}
+
+.input-group {
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hyperlinks {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hyperlinks a {
+  color: black;
+}
+
+.hyperlinks a:hover {
+  color: gray;
+}

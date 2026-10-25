@@ -1,0 +1,103 @@
+{
+  "name": "Simon Herz",
+  "headline": "Aspiring Software Engineer | React & Python",
+  "email": "simon@example.com",
+  "photoUrl": null,
+  "about": "Software Engineering and Mathematics student at UNCO, graduating December 2026.",
+  "targetRole": "Entry-level Software Engineer roles",
+  "skills": [
+    { "id": 1, "name": "React", "category": "Technical", "level": "Advanced" },
+    { "id": 2, "name": "Python", "category": "Technical", "level": "Advanced" },
+    {
+      "id": 3,
+      "name": "SQL",
+      "category": "Technical",
+      "level": "Intermediate"
+    },
+    {
+      "id": 4,
+      "name": "Communication",
+      "category": "Soft",
+      "level": "Advanced"
+    },
+    { "id": 5, "name": "Git", "category": "Tool", "level": "Intermediate" },
+    {
+      "id": 6,
+      "name": "TypeScript",
+      "category": "Technical",
+      "level": "Beginner"
+    }
+  ],
+  "resumes": [
+    {
+      "id": 1,
+      "fileName": "software_engineer_resume.pdf",
+      "uploadedDate": "Sep 18",
+      "isDefault": true
+    },
+    {
+      "id": 2,
+      "fileName": "frontend_focused_resume.pdf",
+      "uploadedDate": "Sep 20",
+      "isDefault": false
+    }
+  ],
+  "experience": [
+    {
+      "id": 1,
+      "title": "Frontend Developer Intern",
+      "organization": "Acme Co",
+      "type": "Job",
+      "dateRange": "Summer 2026",
+      "description": "Built React components for the customer dashboard."
+    },
+    {
+      "id": 2,
+      "title": "Resume Parser",
+      "organization": "CS 350 Team Project",
+      "type": "Class Project",
+      "dateRange": "Fall 2026",
+      "description": "Built the dashboard and profile pages."
+    },
+    {
+      "id": 3,
+      "title": "Coding Club",
+      "organization": "UNCO",
+      "type": "Club Project",
+      "dateRange": "2025 - Present",
+      "description": "Weekly coding challenges and workshops."
+    },
+    {
+      "id": 4,
+      "title": "Food Bank Volunteer",
+      "organization": "Weld County Food Bank",
+      "type": "Volunteer",
+      "dateRange": "2025 - Present",
+      "description": "Sorted and distributed food donations weekly."
+    }
+  ],
+  "education": [
+    {
+      "id": 1,
+      "school": "University of Northern Colorado",
+      "degree": "B.S. Software Engineering & Mathematics",
+      "dateRange": "2023 - 2026"
+    }
+  ],
+  "certifications": [
+    {
+      "id": 1,
+      "name": "AWS Cloud Practitioner",
+      "issuer": "Amazon",
+      "dateEarned": "2026"
+    }
+  ],
+  "honors": [
+    {
+      "id": 1,
+      "title": "Dean's List",
+      "issuer": "University of Northern Colorado",
+      "dateEarned": "Fall 2025"
+    }
+  ]
+}

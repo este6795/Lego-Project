@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "resumeFileName": "software_engineer_resume.pdf",
+    "jobTitle": "Frontend Developer",
+    "company": "Acme Co",
+    "analyzedDate": "Sep 25",
+    "matchScore": 78,
+    "skillsMatched": 9,
+    "skillsTotal": 12
+  },
+  {
+    "id": 2,
+    "resumeFileName": "frontend_focused_resume.pdf",
+    "jobTitle": "Junior React Developer",
+    "company": "Bright Labs",
+    "analyzedDate": "Sep 22",
+    "matchScore": 65,
+    "skillsMatched": 7,
+    "skillsTotal": 12
+  },
+  {
+    "id": 3,
+    "resumeFileName": "software_engineer_resume.pdf",
+    "jobTitle": "Software Engineer Intern",
+    "company": "Northline Systems",
+    "analyzedDate": "Sep 18",
+    "matchScore": 84,
+    "skillsMatched": 11,
+    "skillsTotal": 13
+  }
+]

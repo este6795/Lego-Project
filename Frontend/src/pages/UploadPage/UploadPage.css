@@ -1,0 +1,85 @@
+.upload-page {
+  width: 100%;
+  max-width: 640px;
+}
+
+.upload-form {
+  align-items: stretch;
+  text-align: left;
+  gap: 12px;
+}
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.dropzone:hover,
+.dropzone:focus-visible,
+.dropzone-active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  outline: none;
+}
+
+.dropzone-title {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.dropzone-hint {
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.dropzone-file {
+  color: var(--text-h);
+  word-break: break-word;
+}
+
+.link-button {
+  align-self: flex-start;
+  background: none;
+  color: var(--accent);
+  padding: 0;
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.job-label {
+  color: var(--text-h);
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.optional {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.job-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text-h);
+  background: var(--bg);
+  resize: vertical;
+}
+
+.job-input:focus {
+  outline: 2px solid var(--accent-border);
+  border-color: var(--accent);
+}
+
+.char-count {
+  align-self: flex-end;
+  font-size: 14px;
+}

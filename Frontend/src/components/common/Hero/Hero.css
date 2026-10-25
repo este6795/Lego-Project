@@ -1,0 +1,30 @@
+﻿.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 40px;
+  background-color: #f9f9f9;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Optional image section */
+.hero-image img {
+  width: 450px;
+  height: auto;
+}
