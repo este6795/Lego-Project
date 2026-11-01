@@ -7,15 +7,14 @@ function HomePage() {
   return (
     <div className="home">
       <section className="home-hero">
-        <span className="home-eyebrow">Built for job seekers</span>
+        <span className="home-eyebrow">AI Lego Builder</span>
         <h1 className="home-title">
-          Know if your resume matches the job before you apply
+          Turn an idea into a buildable LEGO model
         </h1>
         <div className="home-title-divider" />
         <p className="home-subtitle">
-          Upload your resume and a job description to get a match score, see
-          which skills you're missing, and get clear feedback on how to close
-          the gap.
+          Describe what you want. The system turns your prompt into a 3D target,
+          voxelizes it, then packs the shape using real LEGO parts.
         </p>
         {!user && (
           <>
@@ -28,7 +27,7 @@ function HomePage() {
               </Link>
             </div>
             <p className="home-actions-hint">
-              New to Resume Parser? Register to try it out.
+              New to AI Lego Builder ? Register to try it out.
             </p>
             <p className="home-actions-hint">
               Already have an account? Log in.
