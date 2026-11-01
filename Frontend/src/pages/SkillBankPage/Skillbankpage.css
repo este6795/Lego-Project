@@ -1,0 +1,116 @@
+/* Layout and card patterns follow Profile.css and AnalysisHistory.css.
+   Only design tokens from index.css are used, so light and dark mode both work. */
+
+.skill-bank {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.skill-bank-card {
+  padding: 24px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+/* App.css centers every <form>; this one should be left-aligned and stretch. */
+.skill-bank-form {
+  align-items: stretch;
+  text-align: left;
+  gap: 8px;
+}
+
+.skill-bank-label {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.skill-bank-form-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.skill-bank-input {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text-h);
+  background: var(--bg);
+}
+
+.skill-bank-input:focus {
+  outline: 2px solid var(--accent-border);
+  border-color: var(--accent);
+}
+
+.skill-bank-form-row button {
+  white-space: nowrap;
+}
+
+.skill-bank-card .error {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.skill-bank-card .empty-note {
+  margin-top: 20px;
+  color: var(--text);
+}
+
+.skill-bank-count {
+  margin: 20px 0 10px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* App.css gives every <button> accent background and 8px 16px padding; reset it here. */
+.skill-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1;
+}
+
+.skill-chip-remove:hover:not(:disabled) {
+  background: var(--bg);
+  color: #dc2626;
+}
