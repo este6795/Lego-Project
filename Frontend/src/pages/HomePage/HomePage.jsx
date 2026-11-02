@@ -7,15 +7,14 @@ function HomePage() {
   return (
     <div className="home">
       <section className="home-hero">
-        <span className="home-eyebrow">Built for job seekers</span>
+        <span className="home-eyebrow">Create Buildable LEGO Models with AI</span>
         <h1 className="home-title">
-          Know if your resume matches the job before you apply
+          Turn Any Idea Into a Buildable LEGO Model
         </h1>
         <div className="home-title-divider" />
         <p className="home-subtitle">
-          Upload your resume and a job description to get a match score, see
-          which skills you're missing, and get clear feedback on how to close
-          the gap.
+          Describe your creation, customize the build settings, and let AI generate a LEGO design using real brick constraints.
+
         </p>
         {!user && (
           <>
@@ -28,7 +27,7 @@ function HomePage() {
               </Link>
             </div>
             <p className="home-actions-hint">
-              New to Resume Parser? Register to try it out.
+              New to AI LEGO Builder? Register to try it out.
             </p>
             <p className="home-actions-hint">
               Already have an account? Log in.
@@ -39,11 +38,11 @@ function HomePage() {
 
       <section className="home-highlight">
         <div className="home-highlight-panel">
-          <h2>Upload once, analyze anytime</h2>
+          <h2>Describe your idea, generate a design</h2>
           <p>
-            Save your resume and reuse it for as many job descriptions as you
-            want. Every analysis is saved to your history, so you can track how
-            you're improving over time.
+            Bring your concept to life by describing it in detail. Our AI will
+            then create a buildable LEGO model based on your input and real
+            brick constraints.
           </p>
         </div>
         <div className="home-highlight-panel">
