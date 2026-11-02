@@ -63,16 +63,36 @@ const legoSchema = {
       items: {
         type: "object",
         properties: {
-          type: {
+          id: {
             type: "string",
-            description: "A requested component, using a singular name where possible."
+            description: "A unique identifier for the component can be name of the component."
+          },
+          type: { 
+            type: "string" 
           },
           quantity: {
             type: "integer",
-            minimum: 1
+            minimum: 1 
+          },
+          parent_id: {
+            type: ["string", "null"],
+            description: "The id of the parent component, if applicable."
+          },
+          placement_hint: {
+            type: ["string", "null"],
+            description: "Optional guidance for where to place the component."
+          },
+          source: {
+            type: "string",
+            enum: ["explicit", "suggested"],
+            description: "Indicates whether the component was explicitly requested or suggested."
+          },
+          reason: {
+            type: ["string", "null"],
+            description: "Optional explanation for why the component was suggested."
           }
         },
-        required: ["type", "quantity"],
+        required: ["id", "type", "quantity", "parent_id", "placement_hint", "source", "reason"],
         additionalProperties: false
       }
     },
@@ -139,29 +159,6 @@ const legoSchema = {
         additionalProperties: false
       }
     },
-
-    suggestions: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          category: {
-            type: "string",
-            enum: [
-              "component",
-              "color",
-              "structure",
-              "function",
-              "style"
-            ]
-          },
-          description: { type: "string" },
-          reason: { type: "string" }
-        },
-        required: ["category", "description", "reason"],
-        additionalProperties: false
-      }
-    }
   },
 
   required: [
@@ -171,8 +168,7 @@ const legoSchema = {
     "components",
     "constraints",
     "conflicts",
-    "highlights",
-    "suggestions"
+    "highlights"
   ],
 
   additionalProperties: false
@@ -182,100 +178,92 @@ const legoSchema = {
 // 2. Prompt instructions
 // --------------------------------------------------
 
+
 function createSystemPrompt(mode) {
-  const suggestionInstructions =
-    mode === "suggestions"
-      ? `
-SUGGESTION MODE:
-- First extract the user's request using every strict rule below.
-- Then provide up to 5 optional design suggestions.
-- Suggestions must be separate from the requested specification.
-- Do not add suggestions to colors, dimensions, components,
-  constraints, or highlights.
-- Suggest ideas, not facts about what the user requested.
-- Suggestions should be relevant and practical.
-`
-      : `
-STRICT MODE:
-- Return an empty suggestions array.
-- Do not invent or recommend additional design features.
 
-COLOR EXTRACTION RULES:
-- Every explicitly requested color must appear in the colors array.
-- Assign each color to the correct object or component.
-- "Two blue windows" means color blue applies to windows,
-  and the components array must contain window with quantity 2.
-- "One green door" means color green applies to door,
-  and the components array must contain door with quantity 1.
-- "A black roof" means color black applies to roof,
-  and roof must be represented as a component if explicitly requested.
-- Never put color assignments in constraints.requirements.
-- Do not repeat colors or component descriptions in requirements.
-- The requirements array is only for additional instructions that
-  cannot be represented by colors, dimensions, components, or
-  forbidden colors.
+  const commonRules = `
+You are the specification parser for a LEGO model generator.
 
-MAIN OBJECT AND COMPONENT RULES:
-- object_type always identifies the main object being built.
-- Do not include the main object itself in the components array.
-- Components must represent parts that belong to the main object.
-- Use the same component names and quantities in strict and
-  suggestions modes.
-- Suggestions must never change the extracted specification.
+Translate the user's building request into structured JSON.
+
+GENERAL RULES:
+- object_type identifies the main object.
+- Never include the main object in the components array.
+- Use singular component names where practical.
+- Extract explicitly requested colors and assign them correctly.
+- Keep forbidden colors separate from requested colors.
+- Use null for unspecified dimensions.
+- Preserve conflicting instructions and record them in conflicts.
+- Highlight phrases must be copied from the original prompt.
+- Return only JSON matching the supplied schema.
+
+COMPONENT HIERARCHY RULES:
+- Every component must have a unique ID.
+- IDs should be descriptive and meaningful.
+- Component types should be singular.
+- Quantity represents the number of identical components.
+- parent_id must be null or reference an existing component ID.
+- Never use object_type as a parent_id.
+- Use null when a component attaches directly to the main object.
+- Use another component's ID when a component attaches to it.
+- Never reference a nonexistent component.
+- Do not invent intermediate parent components just to create a hierarchy.
+- Use placement_hint for approximate positioning only.
+- Never provide exact coordinates or rotations.
+- source must be either "explicit" or "suggested".
+- Explicit components must have reason set to null.
+- Suggested components must have a short explanation in reason.
 
 COLOR RULES:
-- Use the main object's object_type as the applies_to value
-  when a color applies to the main object's body.
-- Use the component name as applies_to when a color applies
-  to a specific component.
-- Use consistent names across all modes.
-
-CONSTRAINT RULES:
-- Record explicitly forbidden colors in forbidden_colors.
-- Do not repeat a forbidden-color restriction in requirements.
-- Use requirements only for additional instructions that
-  cannot be represented by the other schema fields.
+- Use object_type as applies_to when a color applies to the main object's body.
+- Use the component name when a color applies to a specific component.
 
 HIGHLIGHT RULES:
-- Use consistent phrases and categories in all modes.
-- Categorize the main object's phrase as object.
-- Categorize component phrases as component, even when
-  those phrases include colors.
-- Categorize forbidden-color instructions as constraint.
-- Preserve the original wording of each highlighted phrase.
+- Main object phrases use category "object".
+- Component phrases use category "component".
+- Forbidden-color instructions use category "constraint".
+- Preserve the original wording.
+`;
+
+  const strictRules = `
+STRICT MODE:
+
+- Only include components explicitly requested or
+  unambiguously implied by the user's description.
+- Never add creative design features.
+- Never invent components, colors, quantities, or dimensions.
+- All components must have source set to "explicit".
+- All component reason values must be null.
+- Do not make assumptions about typical LEGO constructions.
+`;
+
+  const suggestionsRules = `
+SUGGESTIONS MODE:
+
+Act as a creative LEGO designer, not just a specification parser.
+
+- Preserve all explicitly requested details.
+- Use the original request as the foundation for a complete design.
+- Identify missing structural components that would make
+  the requested model more complete, functional, or visually appealing.
+- You may introduce additional components that the user
+  did not explicitly request.
+- Mark all requested components as "explicit".
+- Mark all additional components as "suggested".
+- Explain why each suggested component is useful.
+- Add no more than 5 suggested component types.
+- Organize suggested and explicit components into a sensible hierarchy.
+- Never violate forbidden colors or explicit user constraints.
+- Do not invent numerical dimensions.
+- Do not present suggestions as if the user explicitly requested them.
 `;
 
   return `
-You are the specification parser for a LEGO model generator.
+${commonRules}
 
-Your job is to translate the user's building request into structured JSON.
+${mode === "strict" ? strictRules : suggestionsRules}
 
-STRICT EXTRACTION RULES:
-- Only extract details explicitly stated or unambiguously implied.
-- Never invent colors, dimensions, quantities, components, or restrictions.
-- Words such as "small", "large", "tall", and "fast" do not establish
-  numerical dimensions.
-- If a dimension is not specified, use null.
-- Use empty arrays when no items were specified.
-- Do not assume an object needs typical features.
-- A spaceship does not automatically need a cockpit, wings, thrusters,
-  antennas, or any particular color.
-- A house does not automatically need windows, doors, or a chimney.
-- Use singular component names where practical, such as "window"
-  instead of "windows".
-- Do not infer prohibited colors or requirements.
-- Keep requested colors separate from forbidden colors.
-- Record explicit requirements concisely. Do not copy an entire prompt
-  into the requirements array.
-- If instructions conflict, preserve the relevant details and add a
-  conflict entry. Never silently choose which instruction to ignore.
-- Do not resolve conflicts yourself.
-- Highlight phrases must be copied exactly from the original prompt.
-- Only include highlights that correspond to actual prompt content.
-- Do not treat your own suggestions as user requirements.
-- Return only JSON matching the supplied schema.
-
-${suggestionInstructions}
+Return only valid JSON.
 `;
 }
 
@@ -292,7 +280,7 @@ function validateSpecification(data) {
     !Array.isArray(data.components) ||
     !Array.isArray(data.highlights) ||
     !Array.isArray(data.conflicts) ||
-    !Array.isArray(data.suggestions) ||
+   // !Array.isArray(data.suggestions) ||
     !data.constraints ||
     !Array.isArray(data.constraints.forbidden_colors) ||
     !Array.isArray(data.constraints.requirements)
@@ -325,6 +313,49 @@ function validateSpecification(data) {
       component.quantity < 1
     ) {
       throw new Error("The model returned an invalid component.");
+    }
+  }
+}
+
+// Inspect component hierarchy for cycles or invalid parent references.
+function validateComponentHierarchy(components) {
+  const componentMap = new Map();
+
+  // Check each component for unique ids
+  for (const component of components) {
+    if (!component.id || !component.id.trim()) {
+      throw new Error("Each component must have a unique non-empty id.");
+    }
+    if (componentMap.has(component.id)) {
+      throw new Error(`Duplicate component id found: ${component.id}`);
+    }
+    if (component.parent_id === component.id) {
+      throw new Error(`Component ${component.id} cannot be its own parent.`);
+    }
+
+    componentMap.set(component.id, component);
+  }
+
+  // Check for valid parent_id references
+  for (const component of components) {
+    if (component.parent_id !== null && !componentMap.has(component.parent_id)) {
+      throw new Error(
+        `Component ${component.id} has an invalid parent_id: ${component.parent_id}`
+      );
+    }
+  }
+
+  // Check for cycles in the component hierarchy
+  for (const component of components) {
+    const visited = new Set();
+    let current = component;
+
+    while (current &&current.parent_id !== null) {
+      if (visited.has(current.id)) {
+        throw new Error(`Cycle detected in component hierarchy at component: ${current.id}`);
+      }
+      visited.add(current.id);
+      current = componentMap.get(current.parent_id);
     }
   }
 }
@@ -408,6 +439,7 @@ app.get("/", (req, res) => {
 
 app.post("/api/parse", async (req, res) => {
   try {
+    console.log("Received request");
     const { text, mode = "strict" } = req.body ?? {};
 
     // Validate user input.
@@ -435,6 +467,7 @@ app.post("/api/parse", async (req, res) => {
 
     const prompt = text.trim();
 
+    console.log("Processing prompt...");
     // Ask Ollama to produce the structured specification.
     const response = await ollama.chat({
       model: MODEL,
@@ -462,28 +495,28 @@ app.post("/api/parse", async (req, res) => {
     const data = JSON.parse(response.message.content);
 
     // Check important fields and dimension values.
+    console.log("Validating specification...");
     validateSpecification(data);
 
     // Normalize common component names.
+    console.log("Normalizing component names...");
     data.components = normalizeComponentNames(data.components);
 
-    // Strict mode must never return design suggestions.
-    if (mode === "strict") {
-      data.suggestions = [];
-    }
+    // Validate the component hierarchy for cycles and invalid parent references.
+    console.log("Validating component hierarchy...");
+    validateComponentHierarchy(data.components);
 
     // Check for color contradictions even if the model missed one.
     detectColorConflicts(data);
+    console.log("Checking for color conflicts...");
+    console.log("Processing complete.");
 
-    // Suggestions are returned separately from the build specification.
-    const { suggestions, ...specification } = data;
-
-    return res.json({
+    // Return the structured specification to the client.
+    return res.status(200).json({
       success: true,
       model: MODEL,
-      mode,
-      data: specification,
-      suggestions: mode === "suggestions" ? suggestions : []
+      mode, 
+      data
     });
 
   } catch (error) {
