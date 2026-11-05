@@ -204,6 +204,7 @@ COMPONENT HIERARCHY RULES:
 - Quantity represents the number of identical components.
 - parent_id must be null or reference an existing component ID.
 - Never use object_type as a parent_id.
+- parent_id is null when a component attaches directly to the main object.
 - Use null when a component attaches directly to the main object.
 - Use another component's ID when a component attaches to it.
 - Never reference a nonexistent component.
@@ -228,6 +229,8 @@ HIGHLIGHT RULES:
   const strictRules = `
 STRICT MODE:
 
+Act exclusively as a specification parser. 
+
 - Only include components explicitly requested or
   unambiguously implied by the user's description.
 - Never add creative design features.
@@ -240,7 +243,8 @@ STRICT MODE:
   const suggestionsRules = `
 SUGGESTIONS MODE:
 
-Act as a creative LEGO designer, not just a specification parser.
+Act as a creative LEGO designer, not just a specification parser. 
+You are to use the user's initial request as a starting point and invent other components that are logically appropriate to the requested object. 
 
 - Preserve all explicitly requested details.
 - Use the original request as the foundation for a complete design.
@@ -387,6 +391,18 @@ function normalizeComponentNames(components) {
   });
 }
 
+// Normalize parent_id values to null for components that attach directly to the main object.
+function normalizeParentIds(components, objectType) {
+  const objectTypeLower = objectType.trim().toLowerCase();
+
+  return components.map((component) => {
+    if (typeof component.parent_id === "string" && component.parent_id.trim().toLowerCase() === objectTypeLower) {
+      return { ...component, parent_id: null };
+    }
+    return component;
+  });
+}
+
 // Add a deterministic check for requested colors that are forbidden.
 // The model can report other kinds of conflicts as well.
 function detectColorConflicts(data) {
@@ -487,7 +503,7 @@ app.post("/api/parse", async (req, res) => {
       stream: false,
 
       options: {
-        temperature: 0
+        temperature: mode === "strict" ? 0.0 : 0.5,
       }
     });
 
@@ -501,6 +517,10 @@ app.post("/api/parse", async (req, res) => {
     // Normalize common component names.
     console.log("Normalizing component names...");
     data.components = normalizeComponentNames(data.components);
+
+    // Normalize parent_id values.
+    console.log("Normalizing parent IDs...");
+    data.components = normalizeParentIds(data.components, data.object_type);
 
     // Validate the component hierarchy for cycles and invalid parent references.
     console.log("Validating component hierarchy...");

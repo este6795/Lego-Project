@@ -1,17 +1,70 @@
-# The Backend
+# Backend
 
 ## Overview
 
-As of writing, the backend has been set up and is a placeholder. Once the algorithm is properly made a working backend will be made to help handle key functions.
+The backend is an Express server that uses Ollama's `qwen3:8b` model to turn
+LEGO building prompts into structured specifications. It supports two parsing
+modes:
 
-## Getting Started
+- `strict` includes only components explicitly requested or unambiguously
+  implied by the prompt.
+- `suggestions` may add up to five useful component types and marks them as
+  suggested in the result.
 
-Right now you can access the backend by doing the following in the terminal:
+The server validates the model response, normalizes common component names and
+parent IDs, checks component hierarchies, and reports conflicts between
+requested and forbidden colors.
 
-```npm install express cors```
+## Requirements
 
-Then, in the terminal run:
-```npm run start```
+- Node.js and npm
+- Ollama installed and running, with the `qwen3:8b` model available
+- Postman or another HTTP client/extension that can send JSON `POST` requests
 
-Then check the following link to check if the backend is working:
-<http://localhost:5000/api/test>
+Download the model with:
+
+```bash
+ollama pull qwen3:8b
+```
+
+## Start the server
+
+In a terminal, change to the `Backend` directory, install the dependencies,
+and start the development server:
+
+```bash
+cd Backend
+npm install
+npm run dev
+```
+
+The server listens at `http://localhost:3000`. To check that it is online,
+visit <http://localhost:3000/>. The health response includes the server status
+and model name.
+
+## Parse a LEGO prompt
+
+Send a `POST` request to:
+
+```text
+http://localhost:3000/api/parse
+```
+
+Set the request's content type to `application/json` and use this JSON body:
+
+```json
+{
+  "text": "[Enter Prompt here]",
+  "mode": "[Either suggestions or strict]"
+}
+```
+
+`text` must contain a non-empty prompt of no more than 2,000 characters.
+`mode` must be `suggestions` or `strict`; if omitted, it defaults to `strict`.
+
+On success, the server returns JSON containing `success`, `model`, `mode`, and
+`data`. The `data` object contains the parsed object type, colors, dimensions,
+components, constraints, conflicts, and highlighted prompt phrases. Invalid
+input returns an appropriate client error; parsing or model failures return an
+error response. Make sure Ollama is running and `qwen3:8b` is available if a
+request cannot be processed.
