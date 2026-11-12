@@ -404,9 +404,10 @@ def fill_space(model):
 
         print("Possible bricks:")
 
-        for brick in candidates:
+        for candidate in candidates:
             print(
-                f"  - {brick.name}"
+                f"  - {candidate.brick.name} "
+                f"rotation={candidate.rotation}"
             )
 
         # Because BRICKS is ordered from
@@ -417,6 +418,7 @@ def fill_space(model):
         print(
             f"Choosing: "
             f"{chosen_brick.name}"
+            f" rotation={chosen_brick.rotation}"
         )
 
         # Place it.
@@ -424,7 +426,8 @@ def fill_space(model):
             chosen_brick,
             x,
             y,
-            z
+            z, 
+            chosen_brick.rotation
         )
 
 
@@ -432,20 +435,20 @@ def fill_space(model):
 # 6. EXPORT TO LDRAW
 # ============================================================
 
-def grid_to_ldraw_position(placement):
+def grid_to_ldraw_position(placement, model):
 
-    brick = placement.brick
+    width, depth = model.get_dimensions(placement.brick, placement.rotation)
 
     x = (
         placement.x +
-        brick.width / 2
+        width / 2
     ) * 20
 
     y = -placement.y * 24
 
     z = (
         placement.z +
-        brick.depth / 2
+        depth / 2
     ) * 20
 
     return x, y, z
@@ -473,7 +476,7 @@ def export_ldraw(
 
         # Convert our grid coordinates
         # into LDraw units.
-        x, y, z = grid_to_ldraw_position(placement)
+        x, y, z = grid_to_ldraw_position(placement, model)
 
         # Get LDraw rotation matrix
         matrix = get_rotation_matrix(placement.rotation)
@@ -504,9 +507,9 @@ def export_ldraw(
 def test_rotation(): 
     model = LegoGrid(4, 1, 4)
 
-    model.place(BRICK_2X4, x=0, y=0, z=0, rotation=90)
+    model.place(BRICK_2X4, x=0, y=0, z=0, rotation=0)
 
-    model.place(BRICK_2X4, x=2, y=0, z=0, rotation=270)
+    model.place(BRICK_2X4, x=0, y=0, z=0, rotation=90)
 
     print("Place bricks:", len(model.placements))
 
@@ -544,6 +547,106 @@ def test_rotation_90_180():
     export_ldraw(model, output)
 
     print(f"LDraw file created at:\n{output}")
+
+def test_rotation_boundary():
+
+    model = LegoGrid(4, 2, 4)
+
+    print("\n--- Boundary Test ---")
+
+    # This brick would extend outside the grid.
+    can_place = model.can_place(
+        BRICK_2X4,
+        x=3,
+        y=0,
+        z=0,
+        rotation=90
+    )
+
+    print("Can place:", can_place)
+
+    assert can_place is False, (
+        "ERROR: Boundary detection failed!"
+    )
+
+    print("Boundary test passed!")
+
+def test_rotation_support():
+
+    model = LegoGrid(4, 2, 4)
+
+    print("\n--- Support Test ---")
+
+    # This position is inside the grid,
+    # but there is nothing underneath it.
+    can_place = model.can_place(
+        BRICK_2X4,
+        x=0,
+        y=1,
+        z=0,
+        rotation=90
+    )
+
+    has_support = model.has_support(
+        BRICK_2X4,
+        x=0,
+        y=1,
+        z=0,
+        rotation=90
+    )
+
+    print("Can place geometrically:", can_place)
+    print("Has support:", has_support)
+
+    assert can_place is True, (
+        "ERROR: The brick should fit inside the grid!"
+    )
+
+    assert has_support is False, (
+        "ERROR: Unsupported brick was accepted!"
+    )
+
+    print("Support test passed!")
+
+def test_valid_rotation_support():
+
+    model = LegoGrid(4, 2, 4)
+
+    print("\n--- Valid Support Test ---")
+
+    # Build a 4x4 foundation using two 2x4 bricks.
+    model.place(
+        BRICK_2X4,
+        0, 0, 0,
+        rotation=0
+    )
+
+    model.place(
+        BRICK_2X4,
+        0, 0, 2,
+        rotation=0
+    )
+
+    # Place a rotated brick above the foundation.
+    has_support = model.has_support(
+        BRICK_2X4,
+        0, 1, 0,
+        rotation=90
+    )
+
+    print("Has support:", has_support)
+
+    assert has_support is True, (
+        "ERROR: Supported brick was rejected!"
+    )
+
+    model.place(
+        BRICK_2X4,
+        0, 1, 0,
+        rotation=90
+    )
+
+    print("Valid support test passed!")
 
 # ============================================================
 # 8. MAIN PROGRAM
@@ -613,6 +716,9 @@ def main():
 # ============================================================
 
 if __name__ == "__main__":
-   # test_rotation()
-    test_rotation_90_180()
-  #  main()
+    # test_rotation()
+    # test_rotation_90_180()
+    #test_rotation_boundary()
+    # test_rotation_support()
+    test_valid_rotation_support()
+    # main()
