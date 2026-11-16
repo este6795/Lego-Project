@@ -1,0 +1,253 @@
+.generate-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+    background: #f8fafc;
+    min-height: calc(100vh - 80px);
+}
+
+.generate-header {
+    margin-bottom: 30px;
+}
+
+    .generate-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #111827;
+    }
+
+    .generate-header p {
+        font-size: 1rem;
+        color: #6b7280;
+    }
+
+.generate-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+/* ---------- Preview Card ---------- */
+
+.preview-card,
+.pipeline-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .preview-header h3 {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+.viewer-btn {
+    border: 1px solid #3b82f6;
+    color: #2563eb;
+    background: white;
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.preview-grid {
+    margin-top: 16px;
+    height: 380px;
+    border-radius: 12px;
+    background-color: #f9fafb;
+    background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient( 90deg, #e5e7eb 1px, transparent 1px );
+    background-size: 24px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lego-model {
+    display: grid;
+    grid-template-columns: repeat(5, 20px);
+    gap: 4px;
+}
+
+.brick {
+    width: 20px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.yellow {
+    background: #facc15;
+}
+
+.blue {
+    background: #4361ee;
+}
+
+.red {
+    background: #dc2626;
+}
+
+.black {
+    background: #111827;
+}
+
+.preview-note {
+    margin-top: 14px;
+    color: #6b7280;
+    font-size: 0.8rem;
+}
+
+/* ---------- Pipeline ---------- */
+
+.pipeline-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+}
+
+.pipeline-title {
+    margin-bottom: 20px;
+}
+
+.pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.active-step {
+    background: #eef4ff;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+    .status-dot.complete {
+        background: #22c55e;
+    }
+
+    .status-dot.running {
+        background: #2563eb;
+    }
+
+    .status-dot.waiting {
+        background: #d1d5db;
+    }
+
+.step-content {
+    flex: 1;
+}
+
+    .step-content h4 {
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+
+    .step-content p {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+    .status-badge.complete {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-badge.running {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .status-badge.waiting {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+/* ---------- Progress ---------- */
+
+.progress-container {
+    margin-top: 24px;
+}
+
+.progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+}
+
+.progress-label {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+.back-btn {
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+    .back-btn:hover {
+        background-color: #1d4ed8;
+    }
+
+@media (max-width: 900px) {
+    .generate-content {
+        grid-template-columns: 1fr;
+    }
+
+    .generate-page {
+        padding: 20px;
+    }
+}

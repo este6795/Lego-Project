@@ -1,6 +1,7 @@
 import ColorPicker from "./ColorPicker";
-
+import { useNavigate } from "react-router-dom";
 function BuildOptionsPanel() {
+const navigate = useNavigate();
   return (
     <div className="build-options-panel">
       <h2>Build Options</h2>
@@ -44,7 +45,7 @@ function BuildOptionsPanel() {
         </p>
       </div>
 
-      <button className="generate-btn">
+      <button onClick={() => navigate("/generate")}>
         Generate LEGO Build
       </button>
     </div>

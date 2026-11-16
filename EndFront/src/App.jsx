@@ -1,7 +1,17 @@
-import CreatePage from "./pages/CreatePage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import CreatePage from "./Pages/CreatePage";
+import GeneratePage from "./Pages/GeneratePage";
 
 function App() {
-  return <CreatePage />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<CreatePage />} />
+        <Route path="/generate" element={<GeneratePage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

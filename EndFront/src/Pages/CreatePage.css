@@ -283,7 +283,7 @@ body {
         flex-direction: column;
     }
 }
-.pipeline-container {
+.pipeline-container1 {
     max-width: 1200px;
     margin: 32px auto 48px;
     padding: 0 32px;
@@ -291,17 +291,17 @@ body {
     align-items: center;
     gap: 16px;
 }
-.pipeline-label {
+.pipeline-label1 {
     font-size: 14px;
     font-weight: 500;
     color: #6b7280;
 }
-.pipeline-steps {
+.pipeline-steps1 {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
-.pipeline-step {
+.pipeline-step1 {
     padding: 8px 14px;
     border: 1px solid #d1d5db;
     border-radius: 999px;
@@ -310,7 +310,7 @@ body {
     font-size: 13px;
     font-weight: 500;
 }
-.active-step {
+.active-step1 {
     background: #eef2ff;
     border-color: #4f67ff;
     color: #4f67ff;

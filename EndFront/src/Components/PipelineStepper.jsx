@@ -10,15 +10,15 @@ function PipelineStepper() {
   ];
 
   return (
-    <div className="pipeline-container">
-      <span className="pipeline-label">Pipeline:</span>
+    <div className="pipeline-container1">
+      <span className="pipeline-label1">Pipeline:</span>
 
-      <div className="pipeline-steps">
+      <div className="pipeline-steps1">
         {steps.map((step, index) => (
           <div
             key={step}
-            className={`pipeline-step ${
-              index === 0 ? "active-step" : ""
+            className={`pipeline-step1 ${
+              index === 0 ? "active-step1" : ""
             }`}
           >
             {step}
