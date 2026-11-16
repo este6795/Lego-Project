@@ -16,26 +16,82 @@ app.use(express.json({ limit: "10kb" }));
 // 1. JSON schema
 // --------------------------------------------------
 
+
 const legoSchema = {
   type: "object",
   properties: {
+
+    // ---------------------------------------
+    // MAIN OBJECT
+    // ---------------------------------------
+
     object_type: {
-      type: "string",
-      description: "The main object explicitly requested."
+      type: "string"
     },
+
+    // ---------------------------------------
+    // OVERALL DESIGN INTENT
+    // ---------------------------------------
+
+    design_intent: {
+      type: "object",
+      properties: {
+        summary: {
+          type: "string"
+        },
+        style: {
+          type: "string"
+        },
+        overall_form: {
+          type: "string"
+        },
+        symmetry: {
+          type: "string",
+          enum: [
+            "bilateral",
+            "radial",
+            "rotational",
+            "asymmetric",
+            "unspecified"
+          ]
+        }
+      },
+      required: [
+        "summary",
+        "style",
+        "overall_form",
+        "symmetry"
+      ],
+      additionalProperties: false
+    },
+
+    // ---------------------------------------
+    // COLORS
+    // ---------------------------------------
 
     colors: {
       type: "array",
       items: {
         type: "object",
         properties: {
-          color: { type: "string" },
-          applies_to: { type: "string" }
+          color: {
+            type: "string"
+          },
+          applies_to: {
+            type: "string"
+          }
         },
-        required: ["color", "applies_to"],
+        required: [
+          "color",
+          "applies_to"
+        ],
         additionalProperties: false
       }
     },
+
+    // ---------------------------------------
+    // DIMENSIONS
+    // ---------------------------------------
 
     dimensions: {
       type: "object",
@@ -58,60 +114,123 @@ const legoSchema = {
       additionalProperties: false
     },
 
+    // ---------------------------------------
+    // COMPONENTS
+    // ---------------------------------------
+
     components: {
       type: "array",
       items: {
         type: "object",
         properties: {
+
           id: {
-            type: "string",
-            description: "A unique identifier for the component can be name of the component."
+            type: "string"
           },
-          type: { 
-            type: "string" 
+
+          type: {
+            type: "string"
           },
+
           quantity: {
             type: "integer",
-            minimum: 1 
+            minimum: 1
           },
+
           parent_id: {
-            type: ["string", "null"],
-            description: "The id of the parent component, if applicable."
+            type: ["string", "null"]
           },
+
+          role: {
+            type: "string",
+            enum: [
+              "primary_structure",
+              "structural",
+              "functional",
+              "support",
+              "surface_detail",
+              "decoration",
+              "other"
+            ]
+          },
+
+          purpose: {
+            type: "string"
+          },
+
+          geometry_hint: {
+            type: "string"
+          },
+
           placement_hint: {
-            type: ["string", "null"],
-            description: "Optional guidance for where to place the component."
+            type: "string"
           },
+
+          orientation_hint: {
+            type: "string"
+          },
+
           source: {
             type: "string",
-            enum: ["explicit", "suggested"],
-            description: "Indicates whether the component was explicitly requested or suggested."
+            enum: [
+              "explicit",
+              "suggested"
+            ]
           },
+
           reason: {
-            type: ["string", "null"],
-            description: "Optional explanation for why the component was suggested."
+            type: ["string", "null"]
           }
         },
-        required: ["id", "type", "quantity", "parent_id", "placement_hint", "source", "reason"],
+
+        required: [
+          "id",
+          "type",
+          "quantity",
+          "parent_id",
+          "role",
+          "purpose",
+          "geometry_hint",
+          "placement_hint",
+          "orientation_hint",
+          "source",
+          "reason"
+        ],
+
         additionalProperties: false
       }
     },
+
+    // ---------------------------------------
+    // CONSTRAINTS
+    // ---------------------------------------
 
     constraints: {
       type: "object",
       properties: {
         forbidden_colors: {
           type: "array",
-          items: { type: "string" }
+          items: {
+            type: "string"
+          }
         },
         requirements: {
           type: "array",
-          items: { type: "string" }
+          items: {
+            type: "string"
+          }
         }
       },
-      required: ["forbidden_colors", "requirements"],
+      required: [
+        "forbidden_colors",
+        "requirements"
+      ],
       additionalProperties: false
     },
+
+    // ---------------------------------------
+    // CONFLICTS
+    // ---------------------------------------
 
     conflicts: {
       type: "array",
@@ -127,12 +246,21 @@ const legoSchema = {
               "other"
             ]
           },
-          description: { type: "string" }
+          description: {
+            type: "string"
+          }
         },
-        required: ["type", "description"],
+        required: [
+          "type",
+          "description"
+        ],
         additionalProperties: false
       }
     },
+
+    // ---------------------------------------
+    // HIGHLIGHTS
+    // ---------------------------------------
 
     highlights: {
       type: "array",
@@ -140,8 +268,7 @@ const legoSchema = {
         type: "object",
         properties: {
           text: {
-            type: "string",
-            description: "An exact phrase from the user's prompt."
+            type: "string"
           },
           category: {
             type: "string",
@@ -155,14 +282,19 @@ const legoSchema = {
             ]
           }
         },
-        required: ["text", "category"],
+        required: [
+          "text",
+          "category"
+        ],
         additionalProperties: false
       }
-    },
+    }
+
   },
 
   required: [
     "object_type",
+    "design_intent",
     "colors",
     "dimensions",
     "components",
@@ -174,102 +306,203 @@ const legoSchema = {
   additionalProperties: false
 };
 
+
 // --------------------------------------------------
 // 2. Prompt instructions
 // --------------------------------------------------
 
 
-function createSystemPrompt(mode) {
 
-  const commonRules = `
-You are the specification parser for a LEGO model generator.
-
-Translate the user's building request into structured JSON.
-
-GENERAL RULES:
-- object_type identifies the main object.
-- Never include the main object in the components array.
-- Use singular component names where practical.
-- Extract explicitly requested colors and assign them correctly.
-- Keep forbidden colors separate from requested colors.
-- Use null for unspecified dimensions.
-- Preserve conflicting instructions and record them in conflicts.
-- Highlight phrases must be copied from the original prompt.
-- Return only JSON matching the supplied schema.
-
-COMPONENT HIERARCHY RULES:
-- Every component must have a unique ID.
-- IDs should be descriptive and meaningful.
-- Component types should be singular.
-- Quantity represents the number of identical components.
-- parent_id must be null or reference an existing component ID.
-- Never use object_type as a parent_id.
-- parent_id is null when a component attaches directly to the main object.
-- Use null when a component attaches directly to the main object.
-- Use another component's ID when a component attaches to it.
-- Never reference a nonexistent component.
-- Do not invent intermediate parent components just to create a hierarchy.
-- Use placement_hint for approximate positioning only.
-- Never provide exact coordinates or rotations.
-- source must be either "explicit" or "suggested".
-- Explicit components must have reason set to null.
-- Suggested components must have a short explanation in reason.
-
-COLOR RULES:
-- Use object_type as applies_to when a color applies to the main object's body.
-- Use the component name when a color applies to a specific component.
-
-HIGHLIGHT RULES:
-- Main object phrases use category "object".
-- Component phrases use category "component".
-- Forbidden-color instructions use category "constraint".
-- Preserve the original wording.
-`;
-
-  const strictRules = `
-STRICT MODE:
-
-Act exclusively as a specification parser. 
-
-- Only include components explicitly requested or
-  unambiguously implied by the user's description.
-- Never add creative design features.
-- Never invent components, colors, quantities, or dimensions.
-- All components must have source set to "explicit".
-- All component reason values must be null.
-- Do not make assumptions about typical LEGO constructions.
-`;
-
-  const suggestionsRules = `
-SUGGESTIONS MODE:
-
-Act as a creative LEGO designer, not just a specification parser. 
-You are to use the user's initial request as a starting point and invent other components that are logically appropriate to the requested object. 
-
-- Preserve all explicitly requested details.
-- Use the original request as the foundation for a complete design.
-- Identify missing structural components that would make
-  the requested model more complete, functional, or visually appealing.
-- You may introduce additional components that the user
-  did not explicitly request.
-- Mark all requested components as "explicit".
-- Mark all additional components as "suggested".
-- Explain why each suggested component is useful.
-- Add no more than 5 suggested component types.
-- Organize suggested and explicit components into a sensible hierarchy.
-- Never violate forbidden colors or explicit user constraints.
-- Do not invent numerical dimensions.
-- Do not present suggestions as if the user explicitly requested them.
-`;
+function createSystemPrompt() {
 
   return `
-${commonRules}
+You are the design planner for a LEGO model generation system.
 
-${mode === "strict" ? strictRules : suggestionsRules}
+Your responsibility is to translate natural language descriptions
+into a structured LEGO design blueprint.
 
-Return only valid JSON.
+The blueprint will be passed to a second AI system that converts
+the design into CAD geometry.
+
+Your output must therefore describe not only what components
+are required, but also their purpose, general shape, and
+relationships with other components.
+
+==================================================
+1. USER REQUIREMENTS
+==================================================
+
+- Preserve all explicitly requested design details.
+- Never ignore or silently change a user requirement.
+- Identify the main object using object_type.
+- Extract explicitly requested colors and dimensions.
+- Record forbidden colors and other restrictions.
+- Preserve contradictory instructions in the conflicts array.
+- Do not invent numerical dimensions.
+- If dimensions are unspecified, use null.
+
+==================================================
+2. DESIGN IMPROVEMENT
+==================================================
+
+Act as a creative LEGO designer.
+
+- Identify components necessary to make the requested
+  object structurally complete or recognizable.
+- Introduce additional components when they meaningfully
+  improve the design's functionality, structure, or appearance.
+- Do not add arbitrary decorative components.
+- Do not duplicate components that already exist.
+- You may add up to 5 suggested component types.
+- You are not required to add suggestions when they
+  would not meaningfully improve the design.
+- Every explicitly requested component must have source
+  set to "explicit".
+- Every additional component must have source set to "suggested".
+- Provide a reason for every suggested component.
+- Explicit components must have reason set to null.
+
+Suggestions should complement the user's design,
+not replace or reinterpret it.
+
+==================================================
+3. MAIN OBJECT AND COMPONENTS
+==================================================
+
+- object_type identifies the overall object.
+- Do not include the main object itself in the components array.
+- Each component must have a unique ID.
+- Use singular component types where practical.
+- Quantity represents the number of identical components.
+- Group repeated components using quantity when appropriate.
+- If repeated components need different parents or distinct
+  structural roles, represent them as separate entries.
+- Do not create unnecessary intermediate components.
+
+==================================================
+4. COMPONENT HIERARCHY
+==================================================
+
+The main object is an implicit root and does not have
+an ID in the components array.
+
+- Use parent_id null when a component attaches directly
+  to the main object.
+- Use another component's ID when a component attaches
+  to that component.
+- Never use object_type as a parent_id.
+- Never reference a nonexistent component ID.
+- Never assign a component as its own parent.
+- Avoid circular parent relationships.
+- A suggested component may serve as the parent of
+  an explicitly requested component when appropriate.
+
+All parent references must form a valid hierarchy.
+
+==================================================
+5. COMPONENT DESIGN INFORMATION
+==================================================
+
+For every component, provide:
+
+role:
+- Identify whether the component is structural, functional,
+  supportive, decorative, or another useful category.
+
+purpose:
+- Explain the component's purpose in the overall model.
+
+geometry_hint:
+- Describe its approximate geometric form.
+- Examples include elongated body, tapered wedge,
+  rounded dome, rectangular frame, or cylindrical shape.
+- Do not provide CAD code or exact measurements.
+
+placement_hint:
+- Describe its approximate location relative to its parent
+  or the main object.
+- Examples include front, rear, top, underside, or sides.
+
+orientation_hint:
+- Describe its general orientation.
+- Consider alignment, symmetry, and direction.
+- Do not provide exact rotation angles.
+
+Use "unspecified" when a detail cannot reasonably be determined.
+
+==================================================
+6. COLORS
+==================================================
+
+- Record every explicitly requested color.
+- Use the main object's object_type as applies_to
+  when the color applies to the main body.
+- Use a component ID when the color applies to a component.
+- Do not invent additional colors.
+- Do not place color assignments in requirements.
+
+==================================================
+7. DIMENSIONS
+==================================================
+
+- Record only explicitly supplied dimensions.
+- Use length_studs, width_studs, and height_bricks.
+- Use null for unspecified measurements.
+- Do not estimate numerical dimensions.
+- Prompt 2 will determine suitable geometric dimensions
+  where the user has not provided them.
+
+==================================================
+8. CONSTRAINTS AND CONFLICTS
+==================================================
+
+- Record explicitly forbidden colors.
+- Record additional requirements that cannot be represented
+  by the other schema fields.
+- Do not repeat information already represented elsewhere.
+- If the user's instructions conflict, preserve both
+  instructions and describe the conflict.
+- Never silently resolve a conflict.
+
+==================================================
+9. DESIGN INTENT
+==================================================
+
+Provide an overall description of the intended model.
+
+- summary: briefly describe the design.
+- style: describe the requested visual style, or use
+  "unspecified" when none is provided.
+- overall_form: describe the general arrangement of the model.
+- symmetry: identify its overall symmetry when appropriate.
+
+Do not invent an elaborate style that the user did not request.
+
+==================================================
+10. HIGHLIGHTS
+==================================================
+
+- Extract important phrases directly from the original prompt.
+- Preserve the original wording.
+- Main object phrases use category "object".
+- Component phrases use category "component".
+- Color phrases use category "color".
+- Dimension phrases use category "dimension".
+- Style phrases use category "style".
+- Restrictions use category "constraint".
+- Never highlight information invented by the AI.
+
+==================================================
+FINAL OUTPUT
+==================================================
+
+Return only valid JSON matching the supplied schema.
+
+Do not include explanations, markdown, or text outside
+the JSON response.
 `;
 }
+
 
 // --------------------------------------------------
 // 3. Basic validation and normalization
@@ -456,7 +689,7 @@ app.get("/", (req, res) => {
 app.post("/api/parse", async (req, res) => {
   try {
     console.log("Received request");
-    const { text, mode = "strict" } = req.body ?? {};
+    const { text } = req.body ?? {};
 
     // Validate user input.
     if (typeof text !== "string" || !text.trim()) {
@@ -474,13 +707,6 @@ app.post("/api/parse", async (req, res) => {
       });
     }
 
-    if (!["strict", "suggestions"].includes(mode)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Mode must be "strict" or "suggestions".'
-      });
-    }
-
     const prompt = text.trim();
 
     console.log("Processing prompt...");
@@ -491,7 +717,7 @@ app.post("/api/parse", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: createSystemPrompt(mode)
+          content: createSystemPrompt()
         },
         {
           role: "user",
@@ -503,7 +729,9 @@ app.post("/api/parse", async (req, res) => {
       stream: false,
 
       options: {
-        temperature: mode === "strict" ? 0.0 : 0.5,
+        temperature: 0.2,
+        num_predict: 5000,
+
       }
     });
 
@@ -535,7 +763,6 @@ app.post("/api/parse", async (req, res) => {
     return res.status(200).json({
       success: true,
       model: MODEL,
-      mode, 
       data
     });
 
